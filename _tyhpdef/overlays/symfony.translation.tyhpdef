@@ -3,7 +3,7 @@
  * LAYER 3 (hand overlay) — Tyhp-authored. Never regenerated.
  * Path: _tyhpdef/overlays/*.tyhpdef  (not under overlays/stubs/)
  * Catalogue message maps, `trans()` parameters, omit http-kernel / DI peers.
- * Print helpers are untyped in this version and overlay as void. Loader paths, provider lists, and dump options are tightened per this Layer 1.
+ * Print helpers already return void; their parameters are tightened. LocaleFallbackProvider lists stay array<int, string>. Test peers stay omitted.
  */
 
 namespace Symfony\Component\Translation {
@@ -28,6 +28,24 @@ namespace Symfony\Component\Translation {
 
         // @overlay-against: function getCatalogueMetadata(string $key, string $domain): mixed
         public function getCatalogueMetadata(string $key = '', string $domain = 'messages'): mixed;
+    }
+
+    /**
+     * Overlay: PHPDoc shapes harvest left loose on `LocaleFallbackProvider`.
+     */
+    // @overlay-against: class LocaleFallbackProvider
+    partial class LocaleFallbackProvider {
+        /**
+         * @param array<int, string> $localeFallbacks
+         */
+        // @overlay-against: function __construct(array $localeFallbacks): void
+        public function __construct(array<int, string> $localeFallbacks = []): void;
+
+        /**
+         * @return array<int, string>
+         */
+        // @overlay-against: function computeFallbackLocales(string $locale): array
+        public function computeFallbackLocales(string $locale): array<int, string>;
     }
 
     /**
@@ -270,59 +288,6 @@ namespace Symfony\Component\Translation\Catalogue {
 
         // @overlay-against: function getObsoleteMessages(string $domain): array
         public function getObsoleteMessages(string $domain): array<string, string>;
-    }
-}
-
-namespace Symfony\Component\Translation\DataCollector {
-    /**
-     * Omit: optional `symfony/http-kernel` DataCollector peer.
-     */
-    // @overlay-against: class TranslationDataCollector extends \Symfony\Component\HttpKernel\DataCollector\DataCollector implements \Symfony\Component\HttpKernel\DataCollector\LateDataCollectorInterface
-    omit class TranslationDataCollector {
-    }
-}
-
-namespace Symfony\Component\Translation\DependencyInjection {
-    /**
-     * Omit: compiler pass implements the optional `symfony/dependency-injection` peer.
-     */
-    // @overlay-against: class DataCollectorTranslatorPass implements \Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface
-    omit class DataCollectorTranslatorPass {
-    }
-
-    /**
-     * Omit: compiler pass implements the optional `symfony/dependency-injection` peer.
-     */
-    // @overlay-against: class LoggingTranslatorPass implements \Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface
-    omit class LoggingTranslatorPass {
-    }
-
-    /**
-     * Omit: compiler pass implements the optional `symfony/dependency-injection` peer.
-     */
-    // @overlay-against: class TranslationDumperPass implements \Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface
-    omit class TranslationDumperPass {
-    }
-
-    /**
-     * Omit: compiler pass implements the optional `symfony/dependency-injection` peer.
-     */
-    // @overlay-against: class TranslationExtractorPass implements \Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface
-    omit class TranslationExtractorPass {
-    }
-
-    /**
-     * Omit: compiler pass implements the optional `symfony/dependency-injection` peer.
-     */
-    // @overlay-against: class TranslatorPass implements \Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface
-    omit class TranslatorPass {
-    }
-
-    /**
-     * Omit: compiler pass implements the optional `symfony/dependency-injection` peer.
-     */
-    // @overlay-against: class TranslatorPathsPass extends \Symfony\Component\DependencyInjection\Compiler\AbstractRecursivePass
-    omit class TranslatorPathsPass {
     }
 }
 
@@ -581,6 +546,16 @@ namespace Symfony\Component\Translation\Provider {
     }
 }
 
+namespace Symfony\Component\Translation\Test {
+    // @overlay-against: class AbstractProviderFactoryTestCase extends \PHPUnit\Framework\TestCase
+    omit abstract class AbstractProviderFactoryTestCase {
+    }
+
+    // @overlay-against: class ProviderTestCase extends \PHPUnit\Framework\TestCase
+    omit abstract class ProviderTestCase {
+    }
+}
+
 namespace Symfony\Component\Translation\Util {
     /**
      * One libxml schema error stored by XliffUtils::validateSchema.
@@ -669,20 +644,11 @@ function findTranslationFiles(string $originalFilePath, ?string $localeToAnalyze
 // @overlay-against: function isTranslationCompleted(array $translationStatus): bool
 function isTranslationCompleted(\TranslationLocaleStatus $translationStatus): bool;
 
-// @overlay-against: function printTable(mixed $translations, mixed $verboseOutput, bool $includeCompletedLanguages): mixed
+// @overlay-against: function printTable(mixed $translations, mixed $verboseOutput, bool $includeCompletedLanguages): void
 function printTable(array<string, \TranslationLocaleStatus> $translations, bool $verboseOutput, bool $includeCompletedLanguages): void;
 
-// @overlay-against: function printTitle(mixed $title): mixed
+// @overlay-against: function printTitle(mixed $title): void
 function printTitle(string $title): void;
 
-// @overlay-against: function printTranslationStatus(mixed $originalFilePath, mixed $translationStatus, mixed $verboseOutput, mixed $includeCompletedLanguages): mixed
+// @overlay-against: function printTranslationStatus(mixed $originalFilePath, mixed $translationStatus, mixed $verboseOutput, mixed $includeCompletedLanguages): void
 function printTranslationStatus(string $originalFilePath, array<string, \TranslationLocaleStatus> $translationStatus, bool $verboseOutput, bool $includeCompletedLanguages): void;
-
-// @overlay-against: function textColorGreen(): mixed
-function textColorGreen(): void;
-
-// @overlay-against: function textColorNormal(): mixed
-function textColorNormal(): void;
-
-// @overlay-against: function textColorRed(): mixed
-function textColorRed(): void;

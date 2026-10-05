@@ -8,7 +8,7 @@
     ],
     "type": "library",
     "license": "Apache-2.0",
-    "version": "7.4.17.0",
+    "version": "8.1.5.0",
     "minimum-stability": "dev",
     "prefer-stable": true,
     "extra": {
@@ -36,7 +36,7 @@
     },
     "require": {
         "php": ">=8.2",
-        "symfony/translation": "7.4.17"
+        "symfony/translation": "8.1.5"
     },
     "require-dev": {
         "tyhpdef/php": "@dev",

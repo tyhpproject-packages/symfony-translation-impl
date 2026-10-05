@@ -6,7 +6,7 @@
 function findTranslationFiles(mixed $originalFilePath, mixed $localeToAnalyze): array;
 function calculateTranslationStatus(mixed $originalFilePath, mixed $translationFilePaths): array;
 function isTranslationCompleted(array $translationStatus): bool;
-function printTranslationStatus(mixed $originalFilePath, mixed $translationStatus, mixed $verboseOutput, mixed $includeCompletedLanguages): mixed;
+function printTranslationStatus(mixed $originalFilePath, mixed $translationStatus, mixed $verboseOutput, mixed $includeCompletedLanguages): void;
 function extractLocaleFromFilePath(mixed $filePath): mixed;
 function extractTranslationKeys(mixed $filePath): array;
 /**
@@ -15,11 +15,11 @@ function extractTranslationKeys(mixed $filePath): array;
 * @generated
 */
 function findTransUnitMismatches(array $baseTranslationKeys, array $translatedKeys): array;
-function printTitle(mixed $title): mixed;
-function printTable(mixed $translations, mixed $verboseOutput, bool $includeCompletedLanguages): mixed;
-function textColorGreen(): mixed;
-function textColorRed(): mixed;
-function textColorNormal(): mixed;
+function printTitle(mixed $title): void;
+function printTable(mixed $translations, mixed $verboseOutput, bool $includeCompletedLanguages): void;
+function textColorGreen(): void;
+function textColorRed(): void;
+function textColorNormal(): void;
 namespace Symfony\Component\Translation {
     /**
     * This interface is used to get, set, and delete metadata about the Catalogue.
@@ -63,6 +63,37 @@ namespace Symfony\Component\Translation {
     */
     class IdentityTranslator implements \Symfony\Contracts\Translation\TranslatorInterface, \Symfony\Contracts\Translation\LocaleAwareInterface {
         use \Symfony\Contracts\Translation\TranslatorTrait;
+        public function setLocale(string $locale): void;
+    }
+    /**
+    * Derives fallback locales based on ICU parent locale information, by shortening locale
+    *
+    * sub tags and ultimately by going through a list of configured fallback locales.
+    * 
+    * Also provides locale string validation.
+    *
+    * @author Matthias Pigulla <mp@webfactory.de>
+    * @generated
+    */
+    final class LocaleFallbackProvider {
+        /**
+        * @param array<int, string> $localeFallbacks List of fallback locales to add _after_ the ones derived from ICU information
+        * @throws InvalidArgumentException If a locale contains invalid characters
+        * @generated
+        */
+        public function __construct(array<int, string> $localeFallbacks = []): void;
+        /**
+        * @return array<int, string>
+        * @generated
+        */
+        public function computeFallbackLocales(string $locale): array<int, string>;
+        /**
+        * Asserts that the locale is valid, throws an Exception if not.
+        *
+        * @throws InvalidArgumentException If the locale contains invalid characters
+        * @generated
+        */
+        public static function validateLocale(string $locale): void;
     }
     /**
     * @author Kevin Bond <kevinbond@gmail.com>
@@ -80,6 +111,7 @@ namespace Symfony\Component\Translation {
         * Switch to a new locale, execute a callback, then switch back to the original.
         *
         * @template T
+        * @param-immediately-invoked-callable $callback
         * @param callable $callback
         * @return T
         * @generated
@@ -98,11 +130,6 @@ namespace Symfony\Component\Translation {
         public function getLocale(): string;
         public function getCatalogue(?string $locale = null): \Symfony\Component\Translation\MessageCatalogueInterface;
         public function getCatalogues(): array;
-        /**
-        * Gets the fallback locales.
-        *
-        * @generated
-        */
         public function getFallbackLocales(): array;
         public function __call(string $method, array $args): mixed;
     }
@@ -345,11 +372,6 @@ namespace Symfony\Component\Translation {
     */
     class TranslatableMessage implements \Symfony\Contracts\Translation\TranslatableInterface {
         public function __construct(string $message, array $parameters = [], ?string $domain = null): void;
-        /**
-        * @deprecated since Symfony 7.4
-        * @generated
-        */
-        deprecated public function __toString(): string;
         public function getMessage(): string;
         public function getParameters(): array;
         public function getDomain(): ?string;
@@ -600,67 +622,8 @@ namespace Symfony\Component\Translation\Catalogue {
 namespace Symfony\Component\Translation\Command {
 }
 namespace Symfony\Component\Translation\DataCollector {
-    /**
-    * @author Abdellatif Ait boudad <a.aitboudad@gmail.com>
-    * @final
-    * @generated
-    */
-    class TranslationDataCollector extends \Symfony\Component\HttpKernel\DataCollector\DataCollector implements \Symfony\Component\HttpKernel\DataCollector\LateDataCollectorInterface {
-        public function __construct(\Symfony\Component\Translation\DataCollectorTranslator $translator): void;
-        public function lateCollect(): void;
-        public function collect(\Symfony\Component\HttpFoundation\Request $request, \Symfony\Component\HttpFoundation\Response $response, ?\Throwable $exception = null): void;
-        public function reset(): void;
-        public function getMessages(): array|\Symfony\Component\VarDumper\Cloner\Data;
-        public function getCountMissings(): int;
-        public function getCountFallbacks(): int;
-        public function getCountDefines(): int;
-        public function getLocale(): ?string;
-        public function getName(): string;
-    }
 }
 namespace Symfony\Component\Translation\DependencyInjection {
-    /**
-    * @author Christian Flothmann <christian.flothmann@sensiolabs.de>
-    * @generated
-    */
-    class DataCollectorTranslatorPass implements \Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface {
-        public function process(\Symfony\Component\DependencyInjection\ContainerBuilder $container): void;
-    }
-    /**
-    * @author Abdellatif Ait boudad <a.aitboudad@gmail.com>
-    * @generated
-    */
-    class LoggingTranslatorPass implements \Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface {
-        public function process(\Symfony\Component\DependencyInjection\ContainerBuilder $container): void;
-    }
-    /**
-    * Adds tagged translation.formatter services to translation writer.
-    *
-    * @generated
-    */
-    class TranslationDumperPass implements \Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface {
-        public function process(\Symfony\Component\DependencyInjection\ContainerBuilder $container): void;
-    }
-    /**
-    * Adds tagged translation.extractor services to translation extractor.
-    *
-    * @generated
-    */
-    class TranslationExtractorPass implements \Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface {
-        public function process(\Symfony\Component\DependencyInjection\ContainerBuilder $container): void;
-    }
-    class TranslatorPass implements \Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface {
-        public function process(\Symfony\Component\DependencyInjection\ContainerBuilder $container): void;
-    }
-    /**
-    * @author Yonel Ceruto <yonelceruto@gmail.com>
-    * @generated
-    */
-    class TranslatorPathsPass extends \Symfony\Component\DependencyInjection\Compiler\AbstractRecursivePass {
-        protected bool $skipScalars ?? true;
-        public function process(\Symfony\Component\DependencyInjection\ContainerBuilder $container): void;
-        protected function processValue(mixed $value, bool $isRoot = false): mixed;
-    }
 }
 namespace Symfony\Component\Translation\Dumper {
     /**
@@ -852,7 +815,7 @@ namespace Symfony\Component\Translation\Exception {
     * @author Fabien Potencier <fabien@symfony.com>
     * @generated
     */
-    class InvalidResourceException extends \InvalidArgumentException implements \Symfony\Component\Translation\Exception\ExceptionInterface {
+    class InvalidResourceException extends \Symfony\Component\Translation\Exception\InvalidArgumentException implements \Symfony\Component\Translation\Exception\ExceptionInterface {
     }
     /**
     * Base LogicException for Translation component.
@@ -875,7 +838,7 @@ namespace Symfony\Component\Translation\Exception {
     * @author Fabien Potencier <fabien@symfony.com>
     * @generated
     */
-    class NotFoundResourceException extends \InvalidArgumentException implements \Symfony\Component\Translation\Exception\ExceptionInterface {
+    class NotFoundResourceException extends \Symfony\Component\Translation\Exception\InvalidArgumentException implements \Symfony\Component\Translation\Exception\ExceptionInterface {
     }
     /**
     * @author Fabien Potencier <fabien@symfony.com>
@@ -951,14 +914,12 @@ namespace Symfony\Component\Translation\Extractor {
         * Extracts translation messages from files, a file or a directory to the catalogue.
         *
         * @param string|iterable $resource Files, a file or a directory
-        * @return void
         * @generated
         */
         public function extract(string|iterable $resource, \Symfony\Component\Translation\MessageCatalogue $catalogue): void;
         /**
         * Sets the prefix that should be used for new found messages.
         *
-        * @return void
         * @generated
         */
         public function setPrefix(string $prefix): void;
@@ -1067,11 +1028,11 @@ namespace Symfony\Component\Translation\Loader {
     class CsvFileLoader extends \Symfony\Component\Translation\Loader\FileLoader {
         protected function loadResource(string $resource): array;
         /**
-        * Sets the delimiter, enclosure, and escape character for CSV.
+        * Sets the delimiter and enclosure character for CSV.
         *
         * @generated
         */
-        public function setCsvControl(string $delimiter = ';', string $enclosure = '"', string $escape = ''): void;
+        public function setCsvControl(string $delimiter = ';', string $enclosure = '"'): void;
     }
     /**
     * @author Abdellatif Ait boudad <a.aitboudad@gmail.com>
@@ -1421,6 +1382,84 @@ namespace Symfony\Component\Translation\Reader {
         * @generated
         */
         public function read(string $directory, \Symfony\Component\Translation\MessageCatalogue $catalogue): void;
+    }
+}
+namespace Symfony\Component\Translation\Test {
+    abstract class AbstractProviderFactoryTestCase extends \PHPUnit\Framework\TestCase {
+        public abstract function createFactory(): \Symfony\Component\Translation\Provider\ProviderFactoryInterface;
+        /**
+        * @return iterable<array>
+        * @generated
+        */
+        public static abstract function supportsProvider(): iterable<array>;
+        /**
+        * @return iterable<array>
+        * @generated
+        */
+        public static abstract function createProvider(): iterable<array>;
+        /**
+        * @return iterable<array>
+        * @generated
+        */
+        public static abstract function unsupportedSchemeProvider(): iterable<array>;
+        /**
+        * @dataprovider supportsProvider
+        * @generated
+        */
+        public function testSupports(bool $expected, string $dsn): mixed;
+        /**
+        * @dataprovider createProvider
+        * @generated
+        */
+        public function testCreate(string $expected, string $dsn): mixed;
+        /**
+        * @dataprovider unsupportedSchemeProvider
+        * @generated
+        */
+        public function testUnsupportedSchemeException(string $dsn, ?string $message = null): mixed;
+    }
+    trait IncompleteDsnTestTrait {
+        /**
+        * @return iterable<array>
+        * @generated
+        */
+        public static abstract function incompleteDsnProvider(): iterable<array>;
+        /**
+        * @dataprovider incompleteDsnProvider
+        * @generated
+        */
+        public function testIncompleteDsnException(string $dsn, ?string $message = null): mixed;
+    }
+    /**
+    * A test case to ease testing a translation provider.
+    *
+    * @author Mathieu Santostefano <msantostefano@protonmail.com>
+    * @generated
+    */
+    abstract class ProviderTestCase extends \PHPUnit\Framework\TestCase {
+        protected \Symfony\Contracts\HttpClient\HttpClientInterface $client;
+        protected \Psr\Log\LoggerInterface|\PHPUnit\Framework\MockObject\MockObject $logger;
+        protected string $defaultLocale;
+        protected \Symfony\Component\Translation\Loader\LoaderInterface|\PHPUnit\Framework\MockObject\MockObject $loader;
+        protected \Symfony\Component\Translation\Dumper\XliffFileDumper|\PHPUnit\Framework\MockObject\MockObject $xliffFileDumper;
+        protected \Symfony\Component\Translation\TranslatorBagInterface|\PHPUnit\Framework\MockObject\MockObject $translatorBag;
+        public static abstract function createProvider(\Symfony\Contracts\HttpClient\HttpClientInterface $client, \Symfony\Component\Translation\Loader\LoaderInterface $loader, \Psr\Log\LoggerInterface $logger, string $defaultLocale, string $endpoint): \Symfony\Component\Translation\Provider\ProviderInterface;
+        /**
+        * @return iterable<array>
+        * @generated
+        */
+        public static abstract function toStringProvider(): iterable<array>;
+        /**
+        * @dataprovider toStringProvider
+        * @generated
+        */
+        public function testToString(\Symfony\Component\Translation\Provider\ProviderInterface $provider, string $expected): mixed;
+        protected function getClient(): \Symfony\Component\HttpClient\MockHttpClient;
+        protected function getLoader(): \Symfony\Component\Translation\Loader\LoaderInterface;
+        protected function getLogger(): \Psr\Log\LoggerInterface;
+        protected function getDefaultLocale(): string;
+        protected function getXliffFileDumper(): \Symfony\Component\Translation\Dumper\XliffFileDumper;
+        protected function getTranslatorBag(): \Symfony\Component\Translation\TranslatorBagInterface;
     }
 }
 namespace Symfony\Component\Translation\Util {

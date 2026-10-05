@@ -18,6 +18,8 @@ extern interface \Symfony\Component\Config\Resource\ResourceInterface;
 // @provided-by: tyhpdef/symfony-finder
 extern class \Symfony\Component\Finder\Finder;
 // @provided-by: tyhpdef/symfony-http-client-contracts
+extern interface \Symfony\Contracts\HttpClient\HttpClientInterface;
+// @provided-by: tyhpdef/symfony-http-client-contracts
 extern interface \Symfony\Contracts\HttpClient\ResponseInterface;
 // @provided-by: tyhpdef/symfony-routing
 extern class \Symfony\Component\Routing\RequestContext;
